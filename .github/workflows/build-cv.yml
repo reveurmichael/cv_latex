@@ -31,7 +31,8 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git checkout --orphan release
-          git rm -rf .
+          # Remove all files and folders except .git
+          find . -mindepth 1 -maxdepth 1 ! -name '.git' ! -name '.' -exec rm -rf {} +
           cp /tmp/cv_release/main.pdf .
           git add main.pdf
           git commit -m "Update CV PDF"
