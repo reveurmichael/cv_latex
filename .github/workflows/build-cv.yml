@@ -6,43 +6,35 @@ on:
       - main
 
 jobs:
-  build:
+  build-and-release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Set up LaTeX
         uses: xu-cheng/latex-action@v2
         with:
           root_file: main.tex
 
-      - name: Upload PDF as artifact
-        uses: actions/upload-artifact@v1
-        with:
-          name: cv-pdf
-          path: main.pdf
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Download PDF artifact
-        uses: actions/download-artifact@v1
-        with:
-          name: cv-pdf
-          
-      - name: Create Release Branch
+      - name: Prepare PDF for release branch
         run: |
-          git init
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
+          mkdir -p /tmp/cv_release
+          cp main.pdf /tmp/cv_release/main.pdf
+
+      - name: Create release branch with only PDF
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git checkout --orphan release
+          git rm -rf .
+          cp /tmp/cv_release/main.pdf .
           git add main.pdf
           git commit -m "Update CV PDF"
-          git branch -M release
-          git remote add origin https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
           git push -f origin release
 
       - name: Create GitHub Release
