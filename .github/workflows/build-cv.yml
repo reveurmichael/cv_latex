@@ -8,48 +8,42 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
       - name: Set up LaTeX
         uses: xu-cheng/latex-action@v2
         with:
           root_file: main.tex
 
-      - name: Create Release Branch with PDF
+      - name: Upload PDF as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: cv-pdf
+          path: main.pdf
+          retention-days: 1
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download PDF artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: cv-pdf
+          
+      - name: Create Release Branch
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          
-          # Create a temporary directory
-          mkdir -p /tmp/release
-          
-          # Copy the generated PDF to the temporary directory
-          cp main.pdf /tmp/release/
-          
-          # Check if release branch exists and delete it if it does
-          if git ls-remote --heads origin release | grep release; then
-            git push origin --delete release
-          fi
-          
-          # Create a new orphan branch
-          git checkout --orphan release
-          
-          # Remove everything from the index
-          git rm -rf --cached .
-          
-          # Copy the PDF from temp directory
-          cp /tmp/release/main.pdf .
-          
-          # Add, commit, and push the PDF
+          git init
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
           git add main.pdf
           git commit -m "Update CV PDF"
+          git branch -M release
+          git remote add origin https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
           git push -f origin release
 
       - name: Create GitHub Release
