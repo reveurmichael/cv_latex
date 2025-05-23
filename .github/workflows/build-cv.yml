@@ -1,0 +1,66 @@
+name: Build LaTeX CV
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up LaTeX
+        uses: xu-cheng/latex-action@v2
+        with:
+          root_file: main.tex
+
+      - name: Commit and Push PDF to Release Branch
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Create/checkout an orphan release branch (no history)
+          git checkout --orphan temp_release
+          
+          # Remove everything from the working directory
+          git rm -rf .
+          
+          # Keep only the PDF file
+          git checkout main -- main.pdf
+          
+          # Add and commit only the PDF file
+          git add main.pdf
+          git commit -m "Update CV PDF"
+          
+          # Force push to release branch
+          git push -f origin temp_release:release
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.run_number }}
+          release_name: Release v${{ github.run_number }}
+          body: "Automated CV PDF build."
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./main.pdf
+          asset_name: cv.pdf
+          asset_content_type: application/pdf 
