@@ -22,29 +22,35 @@ jobs:
         with:
           root_file: main.tex
 
-      - name: Commit and Push PDF to Release Branch
+      - name: Create Release Branch with PDF
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           
-          # Save the generated PDF to a temporary location
-          cp main.pdf /tmp/cv.pdf
+          # Create a temporary directory
+          mkdir -p /tmp/release
           
-          # Create/checkout an orphan release branch (no history)
-          git checkout --orphan temp_release
+          # Copy the generated PDF to the temporary directory
+          cp main.pdf /tmp/release/
           
-          # Remove everything from the working directory
-          git rm -rf .
+          # Check if release branch exists and delete it if it does
+          if git ls-remote --heads origin release | grep release; then
+            git push origin --delete release
+          fi
           
-          # Copy back the PDF file
-          cp /tmp/cv.pdf main.pdf
+          # Create a new orphan branch
+          git checkout --orphan release
           
-          # Add and commit only the PDF file
+          # Remove everything from the index
+          git rm -rf --cached .
+          
+          # Copy the PDF from temp directory
+          cp /tmp/release/main.pdf .
+          
+          # Add, commit, and push the PDF
           git add main.pdf
           git commit -m "Update CV PDF"
-          
-          # Force push to release branch
-          git push -f origin temp_release:release
+          git push -f origin release
 
       - name: Create GitHub Release
         id: create_release
