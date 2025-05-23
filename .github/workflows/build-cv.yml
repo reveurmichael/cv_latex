@@ -27,14 +27,17 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           
+          # Save the generated PDF to a temporary location
+          cp main.pdf /tmp/cv.pdf
+          
           # Create/checkout an orphan release branch (no history)
           git checkout --orphan temp_release
           
           # Remove everything from the working directory
           git rm -rf .
           
-          # Keep only the PDF file
-          git checkout main -- main.pdf
+          # Copy back the PDF file
+          cp /tmp/cv.pdf main.pdf
           
           # Add and commit only the PDF file
           git add main.pdf
