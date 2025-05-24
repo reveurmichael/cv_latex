@@ -1,28 +1,43 @@
-# Docker Setup for LaTeX CV Builder
+# Docker-Based LaTeX CV Builder
 
-This repository includes Docker configuration to build a LaTeX CV without needing to install LaTeX locally.
+This guide explains how to build your LaTeX CV using Docker, eliminating the need to install LaTeX locally.
 
-## Building the CV
+## Advantages of Docker-Based Builds
 
-### Using the Python script
+- **Consistency**: Same build environment regardless of host OS
+- **Zero LaTeX Installation**: No need to install and maintain LaTeX locally
+- **Cross-Platform**: Works identically on Windows, macOS, and Linux
+- **Dependency Management**: All required packages are pre-installed in the container
+- **Isolation**: Build process doesn't affect your local system
 
-Run the provided Python build script:
+## Prerequisites
+
+- [Docker](https://www.docker.com/products/docker-desktop/) installed on your system
+- [Docker Compose](https://docs.docker.com/compose/install/) (included with Docker Desktop)
+
+## Building Methods
+
+This repository provides multiple ways to build with Docker, giving you redundancy and flexibility.
+
+### Using the Python Script (Cross-Platform)
+
+The Python script works on all operating systems and handles error checking:
 
 ```bash
 python docker_build.py
 ```
 
-### Using the shell script (Unix systems)
+### Using the Shell Script (Unix Systems)
 
-For Unix-based systems (Linux, macOS), you can also use the shell script:
+For Unix-based systems (Linux, macOS), the shell script provides a native alternative:
 
 ```bash
 ./docker_build.sh
 ```
 
-All methods will output the PDF to the current directory as `main.pdf`.
+### Using Docker Compose Directly
 
-### Using Docker Compose manually
+For manual control over the build process:
 
 ```bash
 # Build the Docker image
@@ -32,7 +47,9 @@ docker compose build
 docker compose run --rm cv-builder
 ```
 
-### Using Docker directly
+### Using Docker CLI Directly
+
+If Docker Compose is unavailable:
 
 ```bash
 # Build the Docker image
@@ -42,39 +59,86 @@ docker build -t latex-cv-builder .
 docker run --rm -v $(pwd):/latex latex-cv-builder
 ```
 
+All methods will output the PDF to the current directory as `main.pdf`.
+
 ## VSCode Integration with DevContainer
 
-This repository includes scripts to configure VSCode's DevContainer extension and LaTeX Workshop.
+For the best development experience, you can use VSCode's DevContainer feature to edit and build your CV in a containerized environment with full LaTeX support.
 
-### Setup Instructions
+### DevContainer Setup
 
-1. Run the configuration script to create the DevContainer configuration:
+1. Install the required VSCode extensions:
+   - [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+   - [LaTeX Workshop](https://marketplace.visualstudio.com/items?itemName=James-Yu.latex-workshop)
+
+2. Run our configuration script to set up the DevContainer:
    ```bash
    python config_vscode_devcontainer.py
    ```
 
-2. Install the "Dev Containers" extension in VSCode
-3. Install the "LaTeX Workshop" extension in VSCode
-4. Open this repository in VSCode
-5. Click the green button in the bottom-left corner of VSCode
-6. Select "Reopen in Container"
+3. Open the repository in VSCode
 
-VSCode will build the Docker container and connect to it. You can then:
+4. Click the green button in the bottom-left corner (or press F1 and select "Dev Containers: Reopen in Container")
 
-- Edit LaTeX files in VSCode
-- Save changes to automatically build the PDF (using LaTeX Workshop)
-- View the PDF preview directly in VSCode
+5. VSCode will:
+   - Build the Docker container
+   - Connect to it
+   - Configure LaTeX Workshop inside the container
+
+6. Now you can:
+   - Edit LaTeX files with full syntax highlighting and autocomplete
+   - Save to automatically trigger builds
+   - View the PDF preview directly in VSCode
+   - Get real-time error feedback
 
 ## Customization
 
-To modify the CV, edit the `main.tex` file and rebuild using one of the methods above.
+### Dockerfile Customization
+
+To add additional LaTeX packages:
+
+1. Edit the Dockerfile:
+   ```dockerfile
+   # Add packages to this line
+   RUN tlmgr install \
+       moderncv \
+       ulem \
+       xcolor \
+       # Add your packages here
+   ```
+
+2. Rebuild the Docker image:
+   ```bash
+   docker compose build
+   ```
+
+### Document Customization
+
+To modify the CV content:
+
+1. Edit `main.tex` in your editor of choice
+2. Run one of the build methods above to generate an updated PDF
 
 ## Troubleshooting
 
 ### Docker Issues
-- Make sure Docker is installed and running
-- On Windows, ensure Docker Desktop is running with WSL 2 integration
-- On macOS, ensure Docker Desktop is running
 
-### Package Issues
-If you encounter any package-related errors, you may need to add additional packages to the Dockerfile. Add them to the `tlmgr install` line in the Dockerfile, then rebuild the Docker image. 
+- **Docker Not Running**: Make sure Docker Desktop is running
+  ```bash
+  # Check if Docker is running
+  docker info
+  ```
+
+- **Permission Issues**: On Linux, you may need to add your user to the docker group
+  ```bash
+  sudo usermod -aG docker $USER
+  # Log out and back in for changes to take effect
+  ```
+
+- **Windows-Specific**: Ensure WSL 2 is properly configured for Docker Desktop
+
+### LaTeX Issues
+
+- **Missing Packages**: If you need additional packages, add them to the Dockerfile as shown in the Customization section
+
+- **Build Errors**: If the build fails, check the output for specific LaTeX errors and fix them in your .tex file 

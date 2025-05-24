@@ -2,37 +2,59 @@
 
 This guide explains how to set up and build your LaTeX CV directly on your local machine using VSCode or Cursor.
 
-## Setup
+## Advantages of Local Builds
+
+- **Speed**: Direct compilation without container overhead
+- **Simplicity**: Once set up, it's the fastest workflow
+- **Integration**: Full editor features including preview, syntax highlighting, and autocomplete
+- **Offline Use**: No internet connection required for builds
+
+## Setup Process
 
 ### 1. Install LaTeX Workshop Extension
 
-Install the **LaTeX Workshop** extension for VSCode/Cursor.
+1. Open VSCode/Cursor
+2. Go to Extensions (Ctrl+Shift+X or Cmd+Shift+X)
+3. Search for "LaTeX Workshop"
+4. Click "Install"
 
-### 2. Install TexLive
+### 2. Install LaTeX Distribution
 
-Follow the installation guide: https://github.com/James-Yu/LaTeX-Workshop/wiki/Install
+You need a LaTeX distribution installed on your system.
 
-#### On MacOS:
+#### On macOS:
 
 ```bash
+# Using Homebrew
 brew install texlive
 ```
 
 #### On Windows:
-- Install TexLive 
-- Install Perl 
+- Install [TeX Live](https://tug.org/texlive/windows.html)
+- Ensure Perl is installed (required by some LaTeX packages)
+
+#### On Linux:
+```bash
+# Ubuntu/Debian
+sudo apt install texlive-full
+
+# Fedora
+sudo dnf install texlive-scheme-full
+```
 
 ### 3. Configure VSCode
 
-You can either use our configuration script:
+Use our configuration script to set up VSCode automatically:
 
 ```bash
 python config_vscode_local.py
 ```
 
+This creates a `.vscode/settings.json` file with optimal LaTeX configuration.
+
 #### Manual Configuration
 
-If you prefer manual configuration, add the following to VS Code settings.json:
+If you prefer manual configuration, add the following to VSCode's settings.json:
 
 ```json
 "latex-workshop.latex.tools": [
@@ -69,14 +91,28 @@ If you prefer manual configuration, add the following to VS Code settings.json:
 
 ## Building the CV
 
-1. Open your `.tex` file in VSCode/Cursor
-2. Click the "Build LaTeX" button (green play button)
-3. PDF output will be generated automatically
+Once set up, building is straightforward:
 
-Or, even better, on saving the file, the PDF will be generated automatically.
+1. Open `main.tex` in VSCode/Cursor
+2. Either:
+   - Click the "Build LaTeX" button (green play button in the LaTeX Workshop tab)
+   - Save the file (auto-build is enabled in our configuration)
+   - Use the keyboard shortcut (Ctrl+Alt+B or Cmd+Alt+B)
+3. View the PDF directly in VSCode (split screen view is recommended)
 
 ## Troubleshooting
 
-- If you encounter compilation errors, check the LaTeX Workshop output panel for details
-- Make sure all required LaTeX packages are installed
-- Verify your VS Code settings match the recommended configuration 
+### Common Issues
+
+- **Missing Packages**: If you see errors about missing packages, install them using your LaTeX distribution's package manager:
+  ```bash
+  # For TeX Live
+  tlmgr install [package-name]
+  ```
+
+- **Build Errors**: Check the LaTeX Workshop output panel for specific error messages
+
+- **PDF Viewer Issues**: If the PDF doesn't display, try changing the viewer setting:
+  ```json
+  "latex-workshop.view.pdf.viewer": "browser"
+  ```
