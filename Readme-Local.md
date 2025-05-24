@@ -24,21 +24,10 @@ brew install texlive
 
 ### 3. Configure VSCode
 
-You can either manually add the settings below to your VSCode configuration, or use our setup script:
+You can either use our configuration script:
 
 ```bash
-python vscode_config.py
-```
-
-Or use the main setup scripts:
-
-```bash
-python cli_setup.py --vscode
-```
-
-```bash
-python interactive_setup.py
-# Then select option 1
+python config_vscode_local.py
 ```
 
 #### Manual Configuration

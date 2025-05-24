@@ -4,18 +4,12 @@ This repository includes Docker configuration to build a LaTeX CV without needin
 
 ## Building the CV
 
-### Using the Python script (easiest)
+### Using the Python script
 
 Run the provided Python build script:
 
 ```bash
 python docker_build.py
-```
-
-Or use the main setup script:
-
-```bash
-python cli_setup.py --docker
 ```
 
 ### Using the shell script (Unix systems)
@@ -54,15 +48,9 @@ This repository includes scripts to configure VSCode's DevContainer extension an
 
 ### Setup Instructions
 
-1. Run the setup script to create the DevContainer configuration:
+1. Run the configuration script to create the DevContainer configuration:
    ```bash
-   python cli_setup.py --devcontainer
-   ```
-   
-   Or use the interactive setup tool:
-   ```bash
-   python interactive_setup.py
-   # Then select option 2
+   python config_vscode_devcontainer.py
    ```
 
 2. Install the "Dev Containers" extension in VSCode
