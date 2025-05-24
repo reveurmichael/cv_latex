@@ -1,10 +1,59 @@
-## Demo Repo 
-https://github.com/reveurmichael/cv_latex
+# LaTeX CV Builder
 
-## Template
+This repository contains a LaTeX CV template with multiple build options.
+
+## Quick Setup
+
+The easiest way to get started is to use our interactive setup tool:
+
+```bash
+python cv_setup.py
+```
+
+Alternatively, you can use the command-line setup tool:
+
+```bash
+# Set up everything at once
+python setup.py --all
+
+# Or choose specific components
+python setup.py --vscode      # Set up VSCode configuration
+python setup.py --devcontainer # Set up DevContainer
+python setup.py --docker      # Build using Docker
+```
+
+## Build Options
+
+Choose the build method that works best for your workflow:
+
+1. **[Local Build](./Readme-Local.md)** - Build directly on your machine using VSCode/Cursor and LaTeX Workshop
+2. **[Docker Build](./Readme-Docker.md)** - Build using Docker without installing LaTeX locally
+3. **[GitHub Actions](./Readme-GitHub-Actions.md)** - Automated builds and releases with GitHub Actions
+
+## Sample CV
+
+This repository includes a sample CV for demonstration purposes.
+
+## Template Sources
 
 You can also explore other templates:
 - https://www.overleaf.com/gallery/tagged/cv
+
+## Demo Repository
+
+This project is based on: https://github.com/reveurmichael/cv_latex
+
+## Setup Scripts
+
+This repository includes several Python scripts to help you set up your environment:
+
+- `cv_setup.py` - Interactive menu-driven setup tool (recommended for beginners)
+- `setup.py` - Command-line setup tool for advanced users
+- `setup_vscode.py` - Creates `.vscode/settings.json` with LaTeX Workshop configuration
+- `setup_devcontainer.py` - Creates `.devcontainer/devcontainer.json` for containerized development
+- `docker_build.py` - Cross-platform script to build with Docker
+
+These scripts work on Windows, macOS, and Linux, ensuring a consistent experience across platforms.
 
 ## LaTeX Workshop extension for VSCode/Cursor
 
@@ -13,7 +62,6 @@ Install the **LaTeX Workshop** extension for VSCode/Cursor.
 Then, install TexLive:
 
 - https://github.com/James-Yu/LaTeX-Workshop/wiki/Install
-
 
 On MacOS:
 
@@ -24,46 +72,18 @@ brew install texlive
 On Windows:
 - Install TexLive 
 - Install Perl 
-- Add the following to VS Code settings.json:
 
-```json
- "latex-workshop.latex.tools": [
-        {
-            "name": "pdflatex",
-            "command": "pdflatex",
-            "args": [
-                "-synctex=1",
-                "-interaction=nonstopmode",
-                "-file-line-error",
-                "%DOC%"
-            ]
-        }
-    ],
-    "latex-workshop.latex.recipes": [
-        {
-            "name": "pdflatex",
-            "tools": [
-                "pdflatex"
-            ]
-        }
-    ],
-    "latex-workshop.latex.autoBuild.run": "onSave",
-    "latex-workshop.view.pdf.viewer": "tab",
-    "latex-workshop.latex.magic.args": [
-        "-synctex=1",
-        "-interaction=nonstopmode",
-        "-file-line-error",
-        "%DOC%"
-    ],
-    "latex-workshop.message.error.show": true,
-    "latex-workshop.message.warning.show": true
+After installation, run our setup script to configure VSCode:
+
+```bash
+python setup.py --vscode
 ```
 
 ## Compilation of Tex file
 
 1. Open your `.tex` file in VSCode/Cursor
-1. Click the "Build LaTeX" button (green play button)
-1. PDF output will be generated automatically
+2. Click the "Build LaTeX" button (green play button)
+3. PDF output will be generated automatically
 
 Or, even better, on saving the file, the PDF will be generated automatically.
 
@@ -133,70 +153,5 @@ latex.out/
 
 ## GitHub Actions 
 
-Create a file, in `.github/workflows/build-cv.yml`, with the content
+For automated builds and releases with GitHub Actions, see [GitHub Actions README](./Readme-GitHub-Actions.md).
 
-```yml
-name: Build LaTeX CV
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  build-and-release:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Set up LaTeX
-        uses: xu-cheng/latex-action@v2
-        with:
-          root_file: main.tex
-
-      - name: Prepare PDF for release branch
-        run: |
-          mkdir -p /tmp/cv_release
-          cp main.pdf /tmp/cv_release/main.pdf
-
-      - name: Create release branch with only PDF
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git checkout --orphan release
-          # Remove all files and folders except .git
-          find . -mindepth 1 -maxdepth 1 ! -name '.git' ! -name '.' -exec rm -rf {} +
-          cp /tmp/cv_release/main.pdf .
-          git add main.pdf
-          git commit -m "Update CV PDF"
-          git push -f origin release
-
-      - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ github.run_number }}
-          release_name: Release v${{ github.run_number }}
-          body: "Automated CV PDF build."
-          draft: false
-          prerelease: false
-
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./main.pdf
-          asset_name: main.pdf
-          asset_content_type: application/pdf 
-```
-
-If you are using the template from the demo repo, you can just copy the file and rename it to `build-cv.yml`. For other templates, you might need to twist a little bit the yml file.
