@@ -12,7 +12,16 @@ def check_python_version():
 
 def import_script(script_name):
     """Import a Python script as a module"""
-    spec = importlib.util.spec_from_file_location(script_name, f"{script_name}.py")
+    script_mapping = {
+        "setup_vscode": "vscode_config",
+        "setup_devcontainer": "devcontainer_config",
+        "docker_build": "docker_build"
+    }
+    
+    # Map old script names to new ones if needed
+    actual_script = script_mapping.get(script_name, script_name)
+    
+    spec = importlib.util.spec_from_file_location(actual_script, f"{actual_script}.py")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -37,12 +46,12 @@ def main():
     try:
         if args.all or args.vscode:
             print("\n=== Setting up VSCode configuration ===")
-            vscode_module = import_script("setup_vscode")
+            vscode_module = import_script("vscode_config")
             vscode_module.create_vscode_settings()
         
         if args.all or args.devcontainer:
             print("\n=== Setting up DevContainer configuration ===")
-            devcontainer_module = import_script("setup_devcontainer")
+            devcontainer_module = import_script("devcontainer_config")
             devcontainer_module.create_devcontainer_config()
         
         if args.all or args.docker:

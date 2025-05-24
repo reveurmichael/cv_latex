@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-CV Setup Tool - A user-friendly interface for LaTeX CV Builder setup
+Interactive Setup Tool - A user-friendly interface for LaTeX CV Builder setup
 """
 import os
 import sys
@@ -30,8 +30,8 @@ def print_menu():
     print()
 
 def run_setup_script(args):
-    """Run the setup.py script with the given arguments"""
-    cmd = [sys.executable, "setup.py"] + args
+    """Run the cli_setup.py script with the given arguments"""
+    cmd = [sys.executable, "cli_setup.py"] + args
     try:
         subprocess.run(cmd, check=True)
     except subprocess.CalledProcessError as e:

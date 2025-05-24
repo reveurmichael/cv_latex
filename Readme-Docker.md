@@ -15,10 +15,18 @@ python docker_build.py
 Or use the main setup script:
 
 ```bash
-python setup.py --docker
+python cli_setup.py --docker
 ```
 
-This will output the PDF to the current directory as `main.pdf`
+### Using the shell script (Unix systems)
+
+For Unix-based systems (Linux, macOS), you can also use the shell script:
+
+```bash
+./docker_build.sh
+```
+
+All methods will output the PDF to the current directory as `main.pdf`.
 
 ### Using Docker Compose manually
 
@@ -48,7 +56,13 @@ This repository includes scripts to configure VSCode's DevContainer extension an
 
 1. Run the setup script to create the DevContainer configuration:
    ```bash
-   python setup.py --devcontainer
+   python cli_setup.py --devcontainer
+   ```
+   
+   Or use the interactive setup tool:
+   ```bash
+   python interactive_setup.py
+   # Then select option 2
    ```
 
 2. Install the "Dev Containers" extension in VSCode
