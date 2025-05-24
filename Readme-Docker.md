@@ -12,14 +12,12 @@ This guide explains how to build your LaTeX CV using Docker, eliminating the nee
 
 ## Prerequisites
 
-- [Docker](https://www.docker.com/products/docker-desktop/) installed on your system
-- [Docker Compose](https://docs.docker.com/compose/install/) (included with Docker Desktop)
+- Docker and Docker Desktop installed on your system
+- For Windows, WSL 2 is required
 
 ## Building Methods
 
-This repository provides multiple ways to build with Docker, giving you redundancy and flexibility.
-
-### Using the Python Script (Cross-Platform)
+### Option 1: Using the Python Script (Cross-Platform)
 
 The Python script works on all operating systems and handles error checking:
 
@@ -27,7 +25,7 @@ The Python script works on all operating systems and handles error checking:
 python docker_build.py
 ```
 
-### Using the Shell Script (Unix Systems)
+### Option 2: Using the Shell Script (Unix Systems)
 
 For Unix-based systems (Linux, macOS), the shell script provides a native alternative:
 
@@ -35,7 +33,7 @@ For Unix-based systems (Linux, macOS), the shell script provides a native altern
 ./docker_build.sh
 ```
 
-### Using Docker Compose Directly
+### Option 3: Using Docker Compose Directly
 
 For manual control over the build process:
 
@@ -47,7 +45,7 @@ docker compose build
 docker compose run --rm cv-builder
 ```
 
-### Using Docker CLI Directly
+### Option 4: Using Docker CLI Directly
 
 If Docker Compose is unavailable:
 
@@ -112,12 +110,6 @@ To add additional LaTeX packages:
    docker compose build
    ```
 
-### Document Customization
-
-To modify the CV content:
-
-1. Edit `main.tex` in your editor of choice
-2. Run one of the build methods above to generate an updated PDF
 
 ## Troubleshooting
 
@@ -136,9 +128,3 @@ To modify the CV content:
   ```
 
 - **Windows-Specific**: Ensure WSL 2 is properly configured for Docker Desktop
-
-### LaTeX Issues
-
-- **Missing Packages**: If you need additional packages, add them to the Dockerfile as shown in the Customization section
-
-- **Build Errors**: If the build fails, check the output for specific LaTeX errors and fix them in your .tex file 
